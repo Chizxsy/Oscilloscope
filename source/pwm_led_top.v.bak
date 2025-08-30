@@ -1,0 +1,163 @@
+// Copyright (C) 2016  Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions 
+// and other software and tools, and its AMPP partner logic 
+// functions, and any output files from any of the foregoing 
+// (including device programming or simulation files), and any 
+// associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License 
+// Subscription Agreement, the Intel Quartus Prime License Agreement,
+// the Intel MegaCore Function License Agreement, or other 
+// applicable license agreement, including, without limitation, 
+// that your use is for the sole purpose of programming logic 
+// devices manufactured by Intel and sold by Intel or its 
+// authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+// PROGRAM		"Quartus Prime"
+// VERSION		"Version 16.1.0 Build 196 10/24/2016 SJ Lite Edition"
+// CREATED		"Wed Jun 25 19:12:01 2025"
+
+module pwm_led_top(
+	MAX10_CLK1_50,
+	ADC_CLK_10,
+	ARDUINO_RESET_N,
+	SW,
+	ARDUINO_IO,
+	HEX0,
+	HEX1,
+	HEX2,
+	HEX3,
+	HEX4,
+	HEX5,
+	LEDR
+);
+
+
+input wire	MAX10_CLK1_50;
+input wire	ADC_CLK_10;
+input wire	ARDUINO_RESET_N;
+input wire	[2:0] SW;
+output wire	[0:0] ARDUINO_IO;
+output wire	[6:0] HEX0;
+output wire	[6:0] HEX1;
+output wire	[6:0] HEX2;
+output wire	[6:0] HEX3;
+output wire	[6:0] HEX4;
+output wire	[6:0] HEX5;
+output wire	[0:0] LEDR;
+
+wire	[2:0] duty_cycle;
+wire	duty_cycle_clk;
+wire	pwm;
+wire	pwm_clk;
+wire	SYNTHESIZED_WIRE_0;
+wire	SYNTHESIZED_WIRE_1;
+wire	SYNTHESIZED_WIRE_2;
+wire	SYNTHESIZED_WIRE_3;
+wire	[9:0] SYNTHESIZED_WIRE_4;
+wire	[1:0] SYNTHESIZED_WIRE_5;
+wire	[15:0] SYNTHESIZED_WIRE_6;
+wire	[23:0] SYNTHESIZED_WIRE_7;
+wire	SYNTHESIZED_WIRE_8;
+wire	SYNTHESIZED_WIRE_9;
+wire	SYNTHESIZED_WIRE_10;
+wire	SYNTHESIZED_WIRE_11;
+wire	SYNTHESIZED_WIRE_12;
+wire	SYNTHESIZED_WIRE_13;
+wire	[15:0] SYNTHESIZED_WIRE_14;
+wire	[4:0] SYNTHESIZED_WIRE_15;
+wire	[11:0] SYNTHESIZED_WIRE_16;
+wire	SYNTHESIZED_WIRE_17;
+
+assign	ARDUINO_IO[0] = SYNTHESIZED_WIRE_17;
+assign	LEDR[0] = SYNTHESIZED_WIRE_17;
+
+
+
+
+pwm_pll	b2v_inst(
+	.inclk0(MAX10_CLK1_50),
+	.c0(pwm_clk),
+	.c1(duty_cycle_clk));
+
+
+ADC	b2v_inst11(
+	.clk_clk(ADC_CLK_10),
+	.mm_bridge_0_s0_burstcount(SYNTHESIZED_WIRE_0),
+	.mm_bridge_0_s0_write(SYNTHESIZED_WIRE_1),
+	.mm_bridge_0_s0_read(SYNTHESIZED_WIRE_2),
+	.mm_bridge_0_s0_debugaccess(SYNTHESIZED_WIRE_3),
+	.reset_reset_n(ARDUINO_RESET_N),
+	.mm_bridge_0_s0_address(SYNTHESIZED_WIRE_4),
+	.mm_bridge_0_s0_byteenable(SYNTHESIZED_WIRE_5),
+	.mm_bridge_0_s0_writedata(SYNTHESIZED_WIRE_6),
+	.mm_bridge_0_s0_waitrequest(SYNTHESIZED_WIRE_8),
+	.mm_bridge_0_s0_readdatavalid(SYNTHESIZED_WIRE_9),
+	.modular_adc_0_response_valid(SYNTHESIZED_WIRE_10),
+	.modular_adc_0_response_startofpacket(SYNTHESIZED_WIRE_12),
+	.modular_adc_0_response_endofpacket(SYNTHESIZED_WIRE_13),
+	.modular_adc_0_response_empty(SYNTHESIZED_WIRE_11),
+	.mm_bridge_0_s0_readdata(SYNTHESIZED_WIRE_14),
+	.modular_adc_0_response_channel(SYNTHESIZED_WIRE_15),
+	.modular_adc_0_response_data(SYNTHESIZED_WIRE_16));
+
+assign	SYNTHESIZED_WIRE_17 =  ~pwm;
+
+
+debouncer	b2v_inst3(
+	.noisy(SW[0]),
+	.clk(duty_cycle_clk),
+	.debounced(duty_cycle[0]));
+
+
+debouncer	b2v_inst4(
+	.noisy(SW[1]),
+	.clk(duty_cycle_clk),
+	.debounced(duty_cycle[1]));
+
+
+debouncer	b2v_inst5(
+	.noisy(SW[2]),
+	.clk(duty_cycle_clk),
+	.debounced(duty_cycle[2]));
+
+
+pwm_gen	b2v_inst6(
+	.clk(pwm_clk),
+	.duty_cycle(duty_cycle),
+	.pwm(pwm));
+
+
+SEG7_LUT_6	b2v_inst7(
+	.iDIG(SYNTHESIZED_WIRE_7),
+	.oSEG0(HEX0),
+	.oSEG1(HEX1),
+	.oSEG2(HEX2),
+	.oSEG3(HEX3),
+	.oSEG4(HEX4),
+	.oSEG5(HEX5));
+
+
+ADC_connect	b2v_inst8(
+	.clk(ADC_CLK_10),
+	.reset_n(ARDUINO_RESET_N),
+	.mm_bridge_0_s0_waitrequest(SYNTHESIZED_WIRE_8),
+	.mm_bridge_0_s0_readdatavalid(SYNTHESIZED_WIRE_9),
+	.modular_adc_0_valid(SYNTHESIZED_WIRE_10),
+	.modular_adc_0_response_empty(SYNTHESIZED_WIRE_11),
+	.modular_adc_0_startofpacket(SYNTHESIZED_WIRE_12),
+	.modular_adc_0_endofpacket(SYNTHESIZED_WIRE_13),
+	.mm_bridge_0_s0_readdata(SYNTHESIZED_WIRE_14),
+	.modular_adc_0_channel(SYNTHESIZED_WIRE_15),
+	.modular_adc_0_data(SYNTHESIZED_WIRE_16),
+	.mm_bridge_0_s0_burstcount(SYNTHESIZED_WIRE_0),
+	.mm_bridge_0_s0_write(SYNTHESIZED_WIRE_1),
+	.mm_bridge_0_s0_read(SYNTHESIZED_WIRE_2),
+	.mm_bridge_0_s0_debugaccess(SYNTHESIZED_WIRE_3),
+	.led7(SYNTHESIZED_WIRE_7),
+	.mm_bridge_0_s0_address(SYNTHESIZED_WIRE_4),
+	.mm_bridge_0_s0_byteenable(SYNTHESIZED_WIRE_5),
+	.mm_bridge_0_s0_writedata(SYNTHESIZED_WIRE_6));
+
+
+endmodule

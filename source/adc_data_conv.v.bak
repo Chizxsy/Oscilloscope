@@ -1,0 +1,73 @@
+module adc_data_conv(
+    input clk,
+    input reset_n,
+    input [9:0] y_adc_data_in,
+    input bressenham_done,
+    input sample_valid,
+    output reg [9:0] x1, x0,
+    output reg [9:0] y1, y0,
+    output reg bressenham_start,
+    output wire ready_flag,
+    output reg clear_screen
+
+);
+
+localparam integer screen_width = 640;
+
+localparam S_CLEAR = 2'b01;
+localparam S_DRAW_WAIT = 2'b10;
+
+reg [1:0] state;
+
+
+reg [9:0] x_prev;
+reg [9:0] y_prev;
+reg ready_flag;
+
+//convert raw hex to integer
+always @(posedge clk or negedge reset_n) begin
+    if (!reset_n) begin
+        // Start in the CLEAR state
+        state <= S_CLEAR;
+        x_prev <= 0;
+        y_prev <= 240; // Start drawing from the middle of the screen
+        bressenham_start <= 1'b0;
+        clear_screen <= 1'b0;
+    end else begin
+        // Defaults
+        bressenham_start <= 1'b0;
+        clear_screen <= 1'b0;
+
+        case (state)
+            // State 1: Clear the framebuffer. This takes one cycle.
+            S_CLEAR: begin
+                clear_screen <= 1'b1;
+                x_prev <= 0; // Reset X position for the new trace
+                state <= S_DRAW_WAIT;
+            end
+
+            // State 2: Draw the waveform across the screen
+            S_DRAW_WAIT: begin
+                if (ready_flag && sample_valid) begin
+                    ready_flag <= 1'b0;
+                    x0 <= x_prev;
+                    y0 <= y_prev;
+
+                    x1 <= x_prev + 1;
+                    y1 <= y_adc_data_in;
+
+                    bressenham_start <= 1'b1;
+                    
+                    y_prev <= y_adc_data_in;
+
+                    
+                    // IF we just finished a full sweep, go back and clear the screen
+                    if (x_prev >= screen_width - 2) begin
+                        state <= S_CLEAR;
+                    end
+                end
+            end
+        endcase
+    end
+end
+endmodule
